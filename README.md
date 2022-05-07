@@ -2,3 +2,4 @@
 Netology tasks, owner is TI_Lisitsyn
 Files to ignore:
 ./idea
+./terraform/test
