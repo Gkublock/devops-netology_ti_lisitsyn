@@ -46,13 +46,14 @@ for result in result_os.split('\n'):
 ```python
 #!/usr/bin/env python3
 import os
-
+directory = os.path.abspath(os.getcwd())
 bash_command = ["git status"]
 result_os = os.popen(' && '.join(bash_command)).read()
 for result in result_os.split('\n'):
     if result.find('modified') != -1:
         prepare_result = result.replace('modified:   ', '')
-        print(prepare_result)
+        print(directory,prepare_result)
+                                    
 
 ```
 
@@ -80,8 +81,9 @@ else:
 result_os = os.popen(' && '.join(bash_command)).read()
 for result in result_os.split('\n'):
     if result.find('modified') != -1:
+        directory = os.path.abspath(os.getcwd())
         prepare_result = result.replace('modified:   ', '')
-        print(prepare_result)
+        print(directory,prepare_result)
 
 ```
 
@@ -96,13 +98,40 @@ README.md
 1. Наша команда разрабатывает несколько веб-сервисов, доступных по http. Мы точно знаем, что на их стенде нет никакой балансировки, кластеризации, за DNS прячется конкретный IP сервера, где установлен сервис. Проблема в том, что отдел, занимающийся нашей инфраструктурой очень часто меняет нам сервера, поэтому IP меняются примерно раз в неделю, при этом сервисы сохраняют за собой DNS имена. Это бы совсем никого не беспокоило, если бы несколько раз сервера не уезжали в такой сегмент сети нашей компании, который недоступен для разработчиков. Мы хотим написать скрипт, который опрашивает веб-сервисы, получает их IP, выводит информацию в стандартный вывод в виде: <URL сервиса> - <его IP>. Также, должна быть реализована возможность проверки текущего IP сервиса c его IP из предыдущей проверки. Если проверка будет провалена - оповестить об этом в стандартный вывод сообщением: [ERROR] <URL сервиса> IP mismatch: <старый IP> <Новый IP>. Будем считать, что наша разработка реализовала сервисы: `drive.google.com`, `mail.google.com`, `google.com`.
 
 ### Ваш скрипт:
-```python
-???
-```
+#!/usr/bin/env python3
+import socket as s
+import time as t
+import datetime as dt
+
+# set variables 
+i = 1
+wait = 5
+srv = {'drive.google.com':'8.8.8.8', 'mail.google.com':'8.8.8.8', 'google.com':'8.8.8.8'}
+init=0
+
+print(srv)
+
+while 1==1 : #отладочное число проверок 
+  for host in srv:
+    ip = s.gethostbyname(host)
+    if ip != srv[host]:
+      if i==1 and init !=1:
+        print(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) +' [ERROR] ' + str(host) +' IP mistmatch: '+srv[host]+' '+ip)
+      srv[host]=ip
+
+  i+=1 
+  if i >= 50 : 
+    break
+  t.sleep(wait)
 
 ### Вывод скрипта при запуске при тестировании:
 ```
-???
+[liveuser@localhost-live devops-netology_ti_lisitsyn]$ ./4.py 
+{'drive.google.com': '8.8.8.8', 'mail.google.com': '8.8.8.8', 'google.com': '8.8.8.8'}
+2022-09-30 15:47:52 [ERROR] drive.google.com IP mistmatch: 8.8.8.8 108.177.14.194
+2022-09-30 15:47:52 [ERROR] mail.google.com IP mistmatch: 8.8.8.8 142.251.1.19
+2022-09-30 15:47:52 [ERROR] google.com IP mistmatch: 8.8.8.8 64.233.162.139
+
 ```
 
 ## Дополнительное задание (со звездочкой*) - необязательно к выполнению

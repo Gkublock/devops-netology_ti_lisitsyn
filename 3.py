@@ -9,5 +9,5 @@ else:
 result_os = os.popen(' && '.join(bash_command)).read()
 for result in result_os.split('\n'):
     if result.find('modified') != -1:
-        prepare_result = result.replace('modified:   ', '')
-        print(prepare_result)
+        prepare_result = result.replace('\tmodified:   ', '')
+        print({repository}/prepare_result)
